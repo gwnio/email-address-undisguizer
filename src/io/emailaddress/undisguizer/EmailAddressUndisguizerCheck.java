@@ -8,7 +8,7 @@ public class EmailAddressUndisguizerCheck {
 		this.configuration = configuration;
 	}
 	
-	public boolean isSpamSafeEmailAddress(String emailAddress) {
+	public boolean isDisguisedEmailAddress(String emailAddress) {
 		for (EmailAddressUndisguizerSubstituteMetadata substitute : configuration.getSubstitutes()) {
 			if (doesContainSubstitutes(emailAddress, substitute)) {
 				return true;

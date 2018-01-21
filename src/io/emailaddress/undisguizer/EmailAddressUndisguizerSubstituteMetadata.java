@@ -3,6 +3,11 @@ package io.emailaddress.undisguizer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * i.e.
+ * 	baseSubstitutionString = "dot"
+ * 	substitutionStrings = {" dot ", "_dot_", "(dot)"}
+ */
 public class EmailAddressUndisguizerSubstituteMetadata {
 
 	private String baseSubstitutionString;

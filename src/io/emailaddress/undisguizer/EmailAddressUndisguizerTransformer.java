@@ -3,13 +3,10 @@ package io.emailaddress.undisguizer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * https://en.wikipedia.org/wiki/Email_address
- */
 public class EmailAddressUndisguizerTransformer {
 
-//	public static void main(String[] args) throws InvalidSpamSafeEmailAddressException {
-//		new SpamSafeEmailAddressTransformer().transform("john.doe@gmail(dot)com");
+//	public static void main(String[] args) throws EmailAddressUndisguizerException {
+//		new EmailAddressUndisguizerTransformer(new EmailAddressUndisguizerSubstituteConfiguration()).transform("john.doe@gmail(dot)com");
 //	}
 	
 	final int expectedPartsLength = 2;
@@ -21,7 +18,7 @@ public class EmailAddressUndisguizerTransformer {
 	}
 	
 	public String transform(String emailAddress) throws EmailAddressUndisguizerException {
-		if (new EmailAddressUndisguizerCheck(configuration).isSpamSafeEmailAddress(emailAddress)) {
+		if (new EmailAddressUndisguizerCheck(configuration).isDisguisedEmailAddress(emailAddress)) {
 			String[] parts = splitParts(emailAddress);
 			if (parts == null || parts.length < expectedPartsLength) {
 				throw new EmailAddressUndisguizerException("Could not split the email address into a local-part and domain.");
@@ -29,32 +26,32 @@ public class EmailAddressUndisguizerTransformer {
 			String localpart = transformLocalpart(parts[0]);
 			String domain = transformDomain(parts[1]);
 			
-			String transformedEmailAddress = squeeze(localpart) + configuration.getAtSubstitute().getReplacementString() + squeeze(domain);
+			String transformedEmailAddress = squeeze(localpart).toLowerCase() + configuration.getAtSubstitute().getReplacementString() + squeeze(domain).toLowerCase();
 			return transformedEmailAddress;
 		}
 		return emailAddress;
 	}
 	
-	protected String transformLocalpart(String spamSafeLocalpart) {
+	protected String transformLocalpart(String disguisedLocalpart) {
 		for (EmailAddressUndisguizerSubstituteMetadata substitute : configuration.getLocalpartSubstitutes()) {
 			for (String substituteString : substitute.getSubstitutionStrings()) {
-				if (spamSafeLocalpart.contains(substituteString)) {
-					spamSafeLocalpart = replace(spamSafeLocalpart, substituteString, substitute.getReplacementString());
+				if (disguisedLocalpart.contains(substituteString)) {
+					disguisedLocalpart = replace(disguisedLocalpart, substituteString, substitute.getReplacementString());
 				}
 			}
 		}
-		return spamSafeLocalpart;
+		return disguisedLocalpart;
 	}
 	
-	protected String transformDomain(String spamSafeDomain) {
+	protected String transformDomain(String disguisedDomain) {
 		for (EmailAddressUndisguizerSubstituteMetadata substitute : configuration.getDomainSubstitutes()) {
 			for (String substituteString : substitute.getSubstitutionStrings()) {
-				if (spamSafeDomain.contains(substituteString)) {
-					spamSafeDomain = replace(spamSafeDomain, substituteString, substitute.getReplacementString());
+				if (disguisedDomain.contains(substituteString)) {
+					disguisedDomain = replace(disguisedDomain, substituteString, substitute.getReplacementString());
 				}
 			}
 		}
-		return spamSafeDomain;
+		return disguisedDomain;
 	}
 
 	protected String replace(String text, String repl, String with) {
@@ -74,12 +71,12 @@ public class EmailAddressUndisguizerTransformer {
 		}
 	}
 	
-	protected String[] splitParts(String spamSafeEmailAddress) {
+	protected String[] splitParts(String disguisedEmailAddress) {
 		List<String> ats = new ArrayList<String>();
 		ats.addAll(configuration.getAtSubstitute().getSubstitutionStrings());
 		ats.add(configuration.getAtSubstitute().getReplacementString());
 		for (String at : ats) {
-			String[] parts = split(spamSafeEmailAddress, at);
+			String[] parts = split(disguisedEmailAddress, at);
 			if (parts.length == expectedPartsLength) {
 				parts[0] = parts[0].trim();
 				parts[1] = parts[1].trim();
@@ -100,6 +97,12 @@ public class EmailAddressUndisguizerTransformer {
 		return result;
 	}
 	
+	/**
+	 * Removes space characters, thus squeezing the string together.
+	 * 
+	 * @param text
+	 * @return
+	 */
 	protected String squeeze(String text) {
 		return text.replaceAll(" ", "");
 	}

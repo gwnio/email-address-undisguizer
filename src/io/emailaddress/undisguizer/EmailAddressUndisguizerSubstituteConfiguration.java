@@ -37,6 +37,9 @@ public class EmailAddressUndisguizerSubstituteConfiguration {
 		initDomainSubstitutes();
 	}
 	
+	/**
+	 * Override for customization.
+	 */
 	protected void registerSubstitutes() {
 		substitutes.add(atSubstitute);
 		substitutes.add(dotSubstitute);
@@ -46,12 +49,18 @@ public class EmailAddressUndisguizerSubstituteConfiguration {
 		substitutes.add(underscoreSubstitute);
 	}
 	
+	/**
+	 * Override for customization.
+	 */
 	protected void initLocalpartSubstitutes() {
 		localpartSubstitutes.add(dotSubstitute);
 		localpartSubstitutes.add(plusSubstitute);
 		localpartSubstitutes.add(underscoreSubstitute);
 	}
 	
+	/**
+	 * Override for customization.
+	 */
 	protected void initDomainSubstitutes() {
 		domainSubstitutes.add(dotSubstitute);
 		domainSubstitutes.add(hyphenSubstitute);
